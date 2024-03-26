@@ -32,27 +32,28 @@ sessionStorage = {}
 # Внутри функции доступен request.json - это JSON,
 # который отправила нам Алиса в запросе POST
 def main():
-    logging.info(f'Request: {request.json!r}')
+    return 'ok'
+    # logging.info(f'Request: {request.json!r}')
 
-    # Начинаем формировать ответ, согласно документации
-    # мы собираем словарь, который потом отдадим Алисе
-    response = {
-        'session': request.json['session'],
-        'version': request.json['version'],
-        'response': {
-            'end_session': False
-        }
-    }
+    # # Начинаем формировать ответ, согласно документации
+    # # мы собираем словарь, который потом отдадим Алисе
+    # response = {
+    #     'session': request.json['session'],
+    #     'version': request.json['version'],
+    #     'response': {
+    #         'end_session': False
+    #     }
+    # }
 
-    # Отправляем request.json и response в функцию handle_dialog.
-    # Она сформирует оставшиеся поля JSON, которые отвечают
-    # непосредственно за ведение диалога
-    handle_dialog(request.json, response)
+    # # Отправляем request.json и response в функцию handle_dialog.
+    # # Она сформирует оставшиеся поля JSON, которые отвечают
+    # # непосредственно за ведение диалога
+    # handle_dialog(request.json, response)
 
-    logging.info(f'Response:  {response!r}')
+    # logging.info(f'Response:  {response!r}')
 
-    # Преобразовываем в JSON и возвращаем
-    return jsonify(response)
+    # # Преобразовываем в JSON и возвращаем
+    # return jsonify(response)
 
 
 def handle_dialog(req, res):
