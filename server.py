@@ -27,13 +27,12 @@ logging.basicConfig(level=logging.INFO)
 sessionStorage = {}
 
 
-@app.route('/post', methods=['POST'])
+@app.route('/', methods=['POST'])
 # Функция получает тело запроса и возвращает ответ.
 # Внутри функции доступен request.json - это JSON,
 # который отправила нам Алиса в запросе POST
 def main():
     logging.info(f'Request: {request.json!r}')
-
     # Начинаем формировать ответ, согласно документации
     # мы собираем словарь, который потом отдадим Алисе
     response = {
@@ -50,7 +49,6 @@ def main():
     handle_dialog(request.json, response)
 
     logging.info(f'Response:  {response!r}')
-
     # Преобразовываем в JSON и возвращаем
     return jsonify(response)
 
