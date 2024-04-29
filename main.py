@@ -26,6 +26,8 @@ logging.basicConfig(level=logging.INFO)
 # то мы уберем одну подсказку. Как будто что-то меняется :)
 sessionStorage = {}
 
+buy = None
+
 
 @app.route('/', methods=['POST'])
 # Функция получает тело запроса и возвращает ответ.
@@ -54,6 +56,7 @@ def main():
 
 
 def handle_dialog(req, res):
+    global buy
     user_id = req['session']['user_id']
 
     if req['session']['new']:
@@ -90,21 +93,37 @@ def handle_dialog(req, res):
         'я куплю',
         'я покупаю'
     ]:
-        # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
-        res['response']['end_session'] = True
-        return
+        if buy is None:
+            buy = 'elephant'
+            res['response']['text'] = 'Купи кролика!'
+            sessionStorage[user_id] = {
+                'suggests': [
+                    "Не хочу.",
+                    "Не буду.",
+                    "Отстань!",
+                ]
+            }
+            res['response']['buttons'] = get_suggests(user_id)
+            return
+        elif buy == 'elephant':
+            buy = None
+            res['response']['text'] = 'Кролика можно купить на Яндекс Маркет!'
+            res['response']['end_session'] = True
+            return
 
-    # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+    if buy is None:
+        res['response']['text'] = \
+            f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+
+    elif buy == 'elephant':
+        res['response']['text'] = \
+            f"Все говорят '{req['request']['original_utterance']}', а ты купи кролика!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
 # Функция возвращает две подсказки для ответа.
 def get_suggests(user_id):
     session = sessionStorage[user_id]
-
     # Выбираем две первые подсказки из массива.
     suggests = [
         {'title': suggest, 'hide': True}
@@ -118,11 +137,18 @@ def get_suggests(user_id):
     # Если осталась только одна подсказка, предлагаем подсказку
     # со ссылкой на Яндекс.Маркет.
     if len(suggests) < 2:
-        suggests.append({
-            "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
-            "hide": True
-        })
+        if buy is None:
+            suggests.append({
+                "title": "Ладно",
+                "url": "https://market.yandex.ru/search?text=слон",
+                "hide": True
+            })
+        elif buy == 'elephant':
+            suggests.append({
+                "title": "Ладно",
+                "url": "https://market.yandex.ru/search?text=кролик",
+                "hide": True
+            })
 
     return suggests
 
